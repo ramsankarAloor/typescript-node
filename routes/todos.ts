@@ -3,6 +3,7 @@ import { Todo } from "../models/todo";
 const router = Router();
 
 let todos: Todo[] = [];
+type RequestBody = { text : string }
 
 router.get("/", (req, res, next) => {
   try {
@@ -14,9 +15,10 @@ router.get("/", (req, res, next) => {
 
 router.post("/todo", (req, res) => {
   try {
+    const reqBody = req.body as RequestBody
     const newTodo: Todo = {
       id: new Date().toISOString(),
-      text: req.body.text,
+      text: reqBody.text,
     };
     todos.push(newTodo);
     res.status(201).json(newTodo);
@@ -27,12 +29,13 @@ router.post("/todo", (req, res) => {
 
 router.put("/todo/:todoId", (req, res) => {
   try {
+    const reqBody = req.body as RequestBody
     const id = req.params.todoId;
     const todoIndex = todos.findIndex((todoItem) => todoItem.id === id);
     if (!todoIndex) {
       return res.status(404).json({ message: "Item not found" });
     }
-    todos[todoIndex] = { id: id, text: req.body.text };
+    todos[todoIndex] = { id: id, text: reqBody.text };
     res.status(200).json(todos[todoIndex]);
   } catch (error) {
     res.status(500).json({ error: "error in edit todo" });
